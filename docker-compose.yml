@@ -1,0 +1,65 @@
+version: "3.8"
+
+# ──────────────────────────────────────────────────────────────────
+# NYC Taxi Data Pipeline — Local Development Environment
+# ──────────────────────────────────────────────────────────────────
+# Usage:
+#   docker compose up -d          # start everything
+#   docker compose down           # stop everything
+#   docker compose logs -f spark  # tail spark logs
+# ──────────────────────────────────────────────────────────────────
+
+services:
+
+  spark:
+    image: bitnami/spark:3.5
+    container_name: nyc_taxi_spark
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+    ports:
+      - "8080:8080"   # Spark Master UI
+      - "7077:7077"   # Spark Master port
+    volumes:
+      - ./data:/data
+      - ./src:/src
+    networks:
+      - pipeline_net
+
+  spark-worker:
+    image: bitnami/spark:3.5
+    container_name: nyc_taxi_spark_worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=2
+    depends_on:
+      - spark
+    volumes:
+      - ./data:/data
+      - ./src:/src
+    networks:
+      - pipeline_net
+
+  jupyter:
+    image: jupyter/pyspark-notebook:spark-3.5.0
+    container_name: nyc_taxi_jupyter
+    ports:
+      - "8888:8888"   # Jupyter Lab UI
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - SPARK_MASTER=spark://spark:7077
+    volumes:
+      - ./notebooks:/home/jovyan/work/notebooks
+      - ./src:/home/jovyan/work/src
+      - ./data:/home/jovyan/work/data
+    depends_on:
+      - spark
+    networks:
+      - pipeline_net
+
+networks:
+  pipeline_net:
+    driver: bridge
