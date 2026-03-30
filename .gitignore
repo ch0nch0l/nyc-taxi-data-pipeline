@@ -1,0 +1,46 @@
+# Environment & secrets — NEVER commit these
+.env
+*.env
+
+# Data files — too large for git
+data/
+*.parquet
+*.csv
+*.json
+
+# Delta table files
+_delta_log/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Pytest
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Spark local
+spark-warehouse/
+derby.log
+metastore_db/

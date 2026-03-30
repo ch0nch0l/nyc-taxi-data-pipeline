@@ -245,4 +245,4 @@ Tests use small in-memory DataFrames — no data download needed. CI runs on eve
 ## Author
 
 **Mehedi Hasan Chonchol** · Data Engineer  
-[LinkedIn](https://linkedin.com/in/ch0nch0l) · [GitHub](https://github.com/ch0nch0l)
+[LinkedIn](https://linkedin.com/in/ch0nch0l) · [GitHub](https://github.com/[yourusername])
