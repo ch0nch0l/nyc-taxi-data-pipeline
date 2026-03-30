@@ -1,5 +1,5 @@
 pyspark==3.5.0
-delta-spark==3.1.0
+delta-spark[extra]==3.1.0
 pandas==2.1.4
 pyarrow==14.0.2
 requests==2.31.0
