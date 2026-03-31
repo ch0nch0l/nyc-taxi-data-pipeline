@@ -30,7 +30,7 @@ Raw NYC TLC taxi data → Bronze → Silver → Gold → BI-ready Delta tables
                             │  PySpark (clean_taxi.py)
                             ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  SILVER LAYER  (cleaned/canonical)                                   │
+│  SILVER LAYER  (cleaned/canonical)                                  │
 │  • Filter: negative fares, bad datetimes, invalid passengers        │
 │  • Deduplicate on business key (vendor_id + pickup_datetime)        │
 │  • Cast types, rename columns to snake_case                         │
@@ -41,7 +41,7 @@ Raw NYC TLC taxi data → Bronze → Silver → Gold → BI-ready Delta tables
                             │  PySpark (aggregate.py)
                             ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  GOLD LAYER  (analytics-ready)                                       │
+│  GOLD LAYER  (analytics-ready)                                      │
 │  • daily_revenue     — revenue & trips by day                       │
 │  • hourly_patterns   — demand by hour of day + day of week          │
 │  • payment_analysis  — breakdown by payment method                  │
@@ -59,7 +59,7 @@ Raw NYC TLC taxi data → Bronze → Silver → Gold → BI-ready Delta tables
 ## Tech Stack
 
 | Component       | Technology                          |
-|----------------|-------------------------------------|
+|-----------------|-------------------------------------|
 | Processing      | Apache Spark 3.5 (PySpark)          |
 | Storage format  | Delta Lake 3.1                      |
 | Orchestration   | Apache Airflow *(Project 3)*        |
@@ -245,4 +245,4 @@ Tests use small in-memory DataFrames — no data download needed. CI runs on eve
 ## Author
 
 **Mehedi Hasan Chonchol** · Data Engineer  
-[LinkedIn](https://linkedin.com/in/ch0nch0l) · [GitHub](https://github.com/[yourusername])
+[LinkedIn](https://linkedin.com/in/ch0nch0l) · [GitHub](https://github.com/ch0nch0l)
