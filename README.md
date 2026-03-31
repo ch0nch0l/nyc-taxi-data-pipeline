@@ -15,13 +15,13 @@ Raw NYC TLC taxi data → Bronze → Silver → Gold → BI-ready Delta tables
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                    NYC TLC Open Data                                 │
+│                    NYC TLC Open Data                                │
 │          https://d37ci6vzurychx.cloudfront.net/trip-data            │
 └───────────────────────────┬─────────────────────────────────────────┘
                             │  Monthly Parquet files (~3M rows/month)
                             ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│  BRONZE LAYER  (raw/append-only)                                     │
+│  BRONZE LAYER  (raw/append-only)                                    │
 │  • Zero transformation — faithful copy of source                    │
 │  • Audit columns: ingested_at, source_file                          │
 │  • Partitioned by pipeline_year / pipeline_month                    │
