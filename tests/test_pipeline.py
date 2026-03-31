@@ -32,16 +32,21 @@ from src.gold.aggregate import (
 
 @pytest.fixture(scope="session")
 def spark():
-    """Shared SparkSession for all tests. Session-scoped = created once."""
-    from delta import configure_spark_with_delta_pip
-    
-    spark = configure_spark_with_delta_pip(
+    """Shared SparkSession for all tests. Session-scoped = created once.
+
+    Note: Delta Lake extensions are intentionally excluded here.
+    Tests use only in-memory DataFrames — no Delta reads/writes.
+    Delta config requires the JAR on the classpath which is not
+    guaranteed in all CI environments.
+    """
+    spark = (
         SparkSession.builder
         .appName("nyc-taxi-tests")
         .master("local[2]")
         .config("spark.sql.shuffle.partitions", "2")
-    ).getOrCreate()
-    
+        .config("spark.ui.enabled", "false")
+        .getOrCreate()
+    )
     spark.sparkContext.setLogLevel("ERROR")
     yield spark
     spark.stop()
@@ -115,8 +120,11 @@ class TestSilverCleaning:
         assert removals["dropoff_before_pickup"] == 1
 
     def test_dedup_removes_exact_duplicates(self, sample_raw_df):
+        # Dedup must run AFTER filter (matching pipeline order) so that
+        # only the true business-key duplicate (row 3 == row 1) is counted.
         df_renamed = rename_and_cast(sample_raw_df)
-        df_dedup, dupes = deduplicate(df_renamed)
+        df_filtered, _ = filter_invalid_rows(df_renamed)
+        df_dedup, dupes = deduplicate(df_filtered)
         assert dupes == 1
 
     def test_valid_rows_survive_cleaning(self, sample_raw_df):
@@ -171,7 +179,7 @@ class TestSilverCleaning:
 class TestGoldAggregations:
 
     @pytest.fixture
-    def silver_df(self, sample_raw_df):
+    def silver_df(self, spark, sample_raw_df):
         """Silver-cleaned version of the sample data for Gold tests."""
         df = rename_and_cast(sample_raw_df)
         df, _ = filter_invalid_rows(df)
@@ -197,7 +205,8 @@ class TestGoldAggregations:
     def test_distance_bands_correct_labels(self, silver_df):
         result = build_distance_bands(silver_df)
         bands = [r["distance_band"] for r in result.collect()]
-        valid_bands = {"< 1 mile", "1–3 miles", "3–7 miles", "7–15 miles", "15+ miles"}
+        # Note: uses en-dash (–) not hyphen (-) — must match aggregate.py exactly
+        valid_bands = {"< 1 mile", "1\u20133 miles", "3\u20137 miles", "7\u201315 miles", "15+ miles"}
         for band in bands:
             assert band in valid_bands, f"Unexpected distance band: {band}"
 
