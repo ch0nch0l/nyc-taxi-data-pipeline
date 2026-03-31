@@ -86,16 +86,18 @@ def sample_raw_df(spark, raw_schema):
     t1 = datetime(2024, 1, 15, 9, 30)
     t2 = datetime(2024, 1, 15, 9, 45)
     t3 = datetime(2024, 1, 15, 10, 0)
+    t4 = datetime(2024, 1, 15, 10, 30)  # distinct pickup for row 7
+    t5 = datetime(2024, 1, 15, 11, 0)   # dropoff for row 7
 
     data = [
         # (VendorID, pickup, dropoff, pax, dist, rate, s&f, PU, DO, pay,  fare, extra, mta, tip, toll, imp, total, cong)
-        (1, t1, t2, 2, 3.5, 1, "N", 100, 200, 1,  12.50, 0.5, 0.5, 2.5, 0.0, 0.3, 16.3,  2.5),  # valid
-        (2, t1, t3, 1, 5.2, 1, "N", 150, 250, 2,  18.00, 0.5, 0.5, 0.0, 0.0, 0.3, 19.3,  2.5),  # valid
-        (1, t1, t2, 2, 3.5, 1, "N", 100, 200, 1,  12.50, 0.5, 0.5, 2.5, 0.0, 0.3, 16.3,  2.5),  # DUPLICATE of row 1
+        (1, t1, t2, 2, 3.5, 1, "N", 100, 200, 1,  12.50, 0.5, 0.5, 2.5, 0.0, 0.3, 16.3,  2.5),  # valid           — vendor=1 t1
+        (2, t1, t3, 1, 5.2, 1, "N", 150, 250, 2,  18.00, 0.5, 0.5, 0.0, 0.0, 0.3, 19.3,  2.5),  # valid           — vendor=2 t1
+        (1, t1, t2, 2, 3.5, 1, "N", 100, 200, 1,  12.50, 0.5, 0.5, 2.5, 0.0, 0.3, 16.3,  2.5),  # DUPLICATE row 1 — vendor=1 t1
         (1, t2, t3, 1, 0.8, 1, "N",  50, 100, 1,  -5.00, 0.0, 0.5, 0.0, 0.0, 0.3,  0.3,  0.0),  # INVALID: negative fare
         (2, t2, t3, 0, 2.1, 1, "N",  75, 175, 2,   8.00, 0.5, 0.5, 1.0, 0.0, 0.3,  10.3, 0.0),  # INVALID: 0 passengers
         (1, t3, t2, 1, 4.0, 1, "N", 200, 300, 1,  15.00, 0.5, 0.5, 3.0, 0.0, 0.3,  19.3, 2.5),  # INVALID: dropoff < pickup
-        (2, t1, t3, 3, 7.5, 1, "N", 300, 400, 1,  25.00, 0.5, 0.5, 5.0, 0.0, 0.3,  31.3, 2.5),  # valid
+        (2, t4, t5, 3, 7.5, 1, "N", 300, 400, 1,  25.00, 0.5, 0.5, 5.0, 0.0, 0.3,  31.3, 2.5),  # valid           — vendor=2 t4 (unique)
     ]
     return spark.createDataFrame(data, schema=raw_schema)
 
